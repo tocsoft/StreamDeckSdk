@@ -1,0 +1,69 @@
+﻿@page "/"
+@namespace StreamDeckEmulator.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StreamDeckEmulator</title>
+    <base href="~/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link href="css/site.css" rel="stylesheet" />
+</head>
+<body>
+    <app>
+        <component type="typeof(App)" render-mode="ServerPrerendered" />
+    </app>
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.server.js"></script>
+
+    <script>
+        function connectToEditor(iframe, conf) {
+            iframe.contentWindow.connectElgatoStreamDeckSocket(conf.port, conf.uuid, conf.registerEvent, JSON.stringify(conf.pluginInfo), JSON.stringify(conf.actionInfo));
+
+            iframe._to = setInterval(function () {
+                if (iframe.contentWindow) {
+                    setIframeHeight(iframe);
+                } else {
+                    clearInterval(iframe._to);
+                }
+
+            }, 100)
+        }
+        function setIframeHeight(ifrm) {
+            var doc = ifrm.contentDocument ? ifrm.contentDocument :
+                ifrm.contentWindow.document;
+            ifrm.style.visibility = 'hidden';
+            ifrm.style.height = "10px"; // reset to minimal height ...
+            // IE opt. for bing/msn needs a bit added or scrollbar appears
+            ifrm.style.height = getDocHeight(doc) + 20 + "px";
+            ifrm.style.visibility = 'visible';
+        }
+
+        function getDocHeight(doc) {
+            doc = doc || document;
+            // stackoverflow.com/questions/1145850/
+            var body = doc.body, html = doc.documentElement;
+            var height = Math.max(body.scrollHeight, body.offsetHeight,
+                html.clientHeight, html.scrollHeight, html.offsetHeight);
+            return height;
+        }
+    </script>
+</body>
+</html>

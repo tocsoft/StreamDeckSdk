@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>fd54c17d-1b0d-4e6d-a8f0-00d6d765a4c2</UserSecretsId>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>StreamDeckEmulator</ToolCommandName>
+    <PackageOutputPath>../../build</PackageOutputPath>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tocsoft.StreamDeck.Shared\Tocsoft.StreamDeck.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

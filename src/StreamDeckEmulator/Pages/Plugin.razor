@@ -1,0 +1,54 @@
+﻿@page "/plugins/{pluginUUID}"
+
+@inject StreamDeckEmulator.Services.PluginManager pluginManager
+@inject NavigationManager NavManager
+@if (plugin == null)
+{
+    <p>Loading..</p>
+}
+else
+{
+    <h1>@plugin.Name</h1>
+
+    <h2>Actions</h2>
+    <ul>
+        @foreach (var a in plugin.Actions)
+        {
+            <li>
+                <a href="plugins/@pluginUUID/actions/@a.ContextId">
+                    @a.Name - @a.ContextId
+                    <img src="@a.Icon" />
+                </a>
+            </li>
+        }
+    </ul>
+    <h2>Action Types</h2>
+    <ul>
+        @foreach (var a in plugin.ActionsTypes)
+        {
+            <li>
+                @a.Name - @a.UUID
+                <img src="_resources/@pluginUUID/@(a.Icon).png" />
+                <button @onclick="() => { create(a); }">Create</button>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    [ParameterAttribute]
+    public string pluginUUID { get; set; }
+
+    public StreamDeckEmulator.Services.Plugin plugin { get; set; }
+
+    protected override void OnInitialized()
+    {
+        this.plugin = pluginManager.GetPlugin(pluginUUID);
+    }
+
+    protected void create(StreamDeckEmulator.Models.ActionManifest actionManifest)
+    {
+        var action = plugin.CreateAction(actionManifest.UUID);
+        NavManager.NavigateTo($"plugins/{pluginUUID}/actions/{action.ContextId}");
+    }
+}

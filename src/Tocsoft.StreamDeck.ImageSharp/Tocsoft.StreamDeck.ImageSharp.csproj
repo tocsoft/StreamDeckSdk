@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>Tocsoft.StreamDeck</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0010" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tocsoft.StreamDeck\Tocsoft.StreamDeck.csproj" />
+  </ItemGroup>
+
+</Project>

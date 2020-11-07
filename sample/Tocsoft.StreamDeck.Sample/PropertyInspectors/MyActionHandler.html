@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Open PRs Property Inspector</title>
+    <link rel="stylesheet" href="sdpi.css">
+</head>
+<body>
+    <div class="sdpi-wrapper">
+        <!-- for more examples of the types of fields supported in property inspector visit:
+            Elgato Github PiSamples -> https://github.com/elgatosf/streamdeck-pisamples
+            and
+            Elgato SDK Documentation -> https://developer.elgato.com/documentation/stream-deck/sdk/property-inspector/
+    -->
+
+        <div type="textarea" class="sdpi-item">
+            <div class="sdpi-item-label">Send To Plugin Json</div>
+            <span class="sdpi-item-value textarea">
+                <textarea type="textarea" id="mytextarea" onchange=""></textarea>
+            </span>
+        </div>
+        <div class="sdpi-item">
+            <div class="sdpi-item-label">Send to Plugin</div>
+            <button class="sdpi-item-value" id="mybutton" onclick="sendToPlugin()">Send</button>
+        </div>
+
+        <div type="textarea" class="sdpi-item">
+            <div class="sdpi-item-label">Send To Plugin Json</div>
+            <span class="sdpi-item-value textarea">
+                <textarea type="textarea" id="mysettings">{}</textarea>
+            </span>
+        </div>
+        <div class="sdpi-item">
+            <div class="sdpi-item-label">Send to Plugin</div>
+            <button class="sdpi-item-value" id="mysettingsButton" onclick="sendSettings()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        var uuid, actionInfo;
+
+        function sendToPlugin() {
+            var jsonPayload = JSON.parse(document.getElementById("mytextarea").value);
+
+
+            const json = {
+                "action": actionInfo.action,
+                "event": "sendToPlugin",
+                "context": actionInfo.context, // as received from the 'connectElgatoStreamDeckSocket' event
+                "payload": jsonPayload
+            };
+
+            websocket.send(JSON.stringify(json));
+
+        }
+
+        function sendSettings() {
+            var jsonPayload = JSON.parse(document.getElementById("mysettings").value);
+
+
+            const json = {
+                "action": actionInfo.action,
+                "event": "setSettings",
+                "context": actionInfo.context, // as received from the 'connectElgatoStreamDeckSocket' event
+                "payload": jsonPayload
+            };
+
+            websocket.send(JSON.stringify(json));
+
+        }
+
+        function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, inActionInfo) {
+            uuid = inUUID;
+            actionInfo = JSON.parse(inActionInfo);
+            inInfo = JSON.parse(inInfo);
+            websocket = new WebSocket('ws://localhost:' + inPort);
+
+            websocket.onopen = function () {
+                var json = { event: inRegisterEvent, uuid: inUUID };
+                // register property inspector to Stream Deck
+                websocket.send(JSON.stringify(json));
+            };
+            
+            document.getElementById("mysettings").value = JSON.stringify(actionInfo.payload.settings);
+
+            websocket.onmessage = function (evt) {
+                // Received message from Stream Deck
+                if (evt.event == "sendToPropertyInspector") {
+                    document.getElementById("mytextarea").value = JSON.stringify(evt.payload);
+                }
+
+                if (evt.event == "didReceiveSettings") {
+                    document.getElementById("mysettings").value = JSON.stringify(evt.payload.settings);
+                }
+
+                console.log(evt);
+            };
+        }
+
+    </script>
+</body>
+</html>

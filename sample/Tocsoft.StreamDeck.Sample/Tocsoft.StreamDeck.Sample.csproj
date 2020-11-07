@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\src\Tocsoft.StreamDeck\MSBuild\build\Tocsoft.StreamDeck.props" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Authors>Author name</Authors>
+    <Description>this is the description let hope is get added as an attribute</Description>
+    <Product>Sample Action</Product>
+    <PackageId>Tocsoft.StreamDeck.Sample</PackageId>
+    <PackageProjectUrl>http://project.url/</PackageProjectUrl>
+    <AssemblyName>Tocsoft.StreamDeck.Sample</AssemblyName>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Tocsoft.StreamDeck.ImageSharp\Tocsoft.StreamDeck.ImageSharp.csproj" />
+    <ProjectReference Include="..\..\src\Tocsoft.StreamDeck\Tocsoft.StreamDeck.csproj" />
+  </ItemGroup>
+
+
+  <Import Project="..\..\src\Tocsoft.StreamDeck\MSBuild\build\Tocsoft.StreamDeck.targets" />
+</Project>

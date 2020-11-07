@@ -1,0 +1,160 @@
+﻿
+@page "/plugins/{pluginUUID}/actions/{contextid}"
+
+@inject StreamDeckEmulator.Services.PluginManager pluginManager
+@inject IJSRuntime jsRuntime
+@inject NavigationManager NavManager
+@implements IDisposable
+
+<button>Delete</button>
+@if (plugin == null)
+{
+    <p>Loading..</p>
+}
+else
+{
+    <h1>@plugin.Name</h1>
+
+    <h2>@action.Name - @action.ContextId</h2>
+
+    if (okShowing)
+    {
+        <strong>OK!!</strong>
+    }
+    if (alertShowing)
+    {
+        <strong>Alert!!</strong>
+    }
+    <br />
+    <!-- this hsould be current image as a encoded string not a path -->
+    <img src="@action.Icon" />
+    <button @onmousedown="KeyDown" @onmouseup="KeyUp">Action Button</button>
+
+    <br />
+    <form>
+
+        <div class="form-group">
+            <label for="exampleInputEmail1">Email address</label>
+            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(action.PropertyInspectorPath))
+        {
+            var config = new
+            {
+                port = pluginManager.WebSocketPort,
+                uuid = action.ContextId,
+                registerEvent = new StreamDeckEmulator.Models.ServerEvents.RegisterPropertyInspectorEvent().Event,
+                pluginInfo = new { },
+                actionInfo = new
+                {
+                    action = action.UUID,
+                    context = action.ContextId,
+                    device = "",
+                    payload = new
+                    {
+                        settings = action.Settings,
+                        coordinates = new
+                        {
+                            column = 2,
+                            row = 1
+
+                        }
+                    }
+                }
+            };
+
+            var configJson = Tocsoft.StreamDeck.Events.StreamDeckEvent.Serialize(config);
+
+            <iframe style="width:100%" src="_resources/@pluginUUID/@(action.PropertyInspectorPath)" onload="connectToEditor(this, @configJson)" />
+
+        }
+    </form>
+}
+
+@code {
+    [ParameterAttribute]
+    public string pluginUUID { get; set; }
+    [ParameterAttribute]
+    public string contextid { get; set; }
+    public bool okShowing { get; set; }
+    public bool alertShowing { get; set; }
+
+    public StreamDeckEmulator.Services.Plugin plugin { get; set; }
+    public StreamDeckEmulator.Services.Action action { get; set; }
+
+    public IDisposable okListener;
+    public IDisposable alertListener;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.plugin = pluginManager.GetPlugin(pluginUUID);
+        this.action = plugin.GetActionByContext(contextid);
+
+        this.okListener = this.action.Listen<Tocsoft.StreamDeck.Events.ShowOkEvent>(async e =>
+        {
+            okShowing = true;
+            alertShowing = false;
+            await this.InvokeAsync(this.StateHasChanged);
+
+            await Task.Delay(2000);
+            if (okShowing)
+            {
+                okShowing = false;
+                await this.InvokeAsync(this.StateHasChanged);
+            }
+        });
+        this.alertListener = this.action.Listen<Tocsoft.StreamDeck.Events.ShowAlertEvent>(async e =>
+        {
+            alertShowing = true;
+            okShowing = false;
+            await this.InvokeAsync(this.StateHasChanged);
+
+            await Task.Delay(2000);
+            if (alertShowing)
+            {
+                alertShowing = false;
+                await this.InvokeAsync(this.StateHasChanged);
+            }
+        });
+
+        await this.Show();
+    }
+
+    protected async Task Delete()
+    {
+        var confirmed = await jsRuntime.InvokeAsync<bool>("confirm", new[] { "Delete action instance?" });
+        if (confirmed)
+        {
+            this.plugin.DeleteAction(this.action);
+            NavManager.NavigateTo($"plugins/{pluginUUID}");
+        }
+    }
+
+    protected async Task KeyDown()
+    {
+        await this.action.KeyDown();
+    }
+
+    protected async Task KeyUp()
+    {
+        await this.action.KeyUp();
+    }
+
+    protected async Task Show()
+    {
+        await this.action.Show();
+    }
+
+    protected async Task Hide()
+    {
+        await this.action.Hide();
+    }
+
+    public void Dispose()
+    {
+        this.okListener.Dispose();
+        this.alertListener.Dispose();
+        _ = this.Hide();
+    }
+}

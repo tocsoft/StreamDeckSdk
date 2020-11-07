@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Target Name="ExportStreamDeckPluginPrepareForPublish" BeforeTargets="PrepareForPublish">
+    <PropertyGroup>
+      <PublishDirPlugin>$(PublishDir)</PublishDirPlugin>
+      <StreamDeckPackageBaseIntermediateOutputPath>$(BaseIntermediateOutputPath)publish\plugin\</StreamDeckPackageBaseIntermediateOutputPath>
+      <PublishDir>$(StreamDeckPackageBaseIntermediateOutputPath)$(AssemblyName.ToLower()).sdPlugin\</PublishDir>
+      <StreamDeckPackagePath>$(PublishDirPlugin)\$(AssemblyName.ToLower()).streamDeckPlugin</StreamDeckPackagePath>
+      <StreamDeckPluginManifestPath>$([System.IO.Path]::GetFullPath('$(OutDir)'))manifest.json</StreamDeckPluginManifestPath>
+      <StreamDeckPluginManifestPathPublished>$([System.IO.Path]::GetFullPath('$(PublishDir)'))</StreamDeckPluginManifestPathPublished>
+    </PropertyGroup>
+    <ItemGroup>
+      <StreamDeckPluginManifestPathFile Include="$(StreamDeckPluginManifestPath)" />
+    </ItemGroup>
+    <Message Importance="high" Text="$(StreamDeckPluginManifestPathFile)"></Message>
+    <Copy SourceFiles="@(StreamDeckPluginManifestPathFile)" DestinationFolder="$(PublishDir)"/>
+  </Target>
+
+  <Target Name="ExportStreamDeckPluginAfterPublish" AfterTargets="Publish">
+    
+    <!--mac/window toggle here, figure out a way to not need this!!!-->
+    <PropertyGroup>
+      <_fullPublishSrcFolderPath>$([System.IO.Path]::GetFullPath('$(PublishDir)').TrimEnd("\"))</_fullPublishSrcFolderPath>
+      <_fullPublishDestFolderPath>$([System.IO.Path]::GetFullPath('$(PublishDirPlugin)').TrimEnd("\"))</_fullPublishDestFolderPath>
+      <StreamDeckPluginPackageCommand>"$(StreamDeckSdkPath)tools\DistributionTool.exe" -b -i "$(_fullPublishSrcFolderPath)" -o "$(_fullPublishDestFolderPath)"</StreamDeckPluginPackageCommand>
+    </PropertyGroup>
+  
+    <!-- package up here too -->
+    <RemoveDir Directories="$(_fullPublishDestFolderPath)" />
+    <MakeDir Directories="$(_fullPublishDestFolderPath)" />
+    <Exec Command="$(StreamDeckPluginPackageCommand)" Condition="true"  LogStandardErrorAsError="true"   />
+    <!--<ZipDirectory DestinationFile="$(StreamDeckPackagePath)" SourceDirectory="$(StreamDeckPackageBaseIntermediateOutputPath)" Overwrite="true" />-->
+  </Target>
+
+  <Target Name="ExportStreamDeckPluginPrepareForBuild" BeforeTargets="Build">
+
+    <PropertyGroup>
+      <StreamDeckPluginManifestPath>$([System.IO.Path]::GetFullPath('$(OutDir)'))manifest.json</StreamDeckPluginManifestPath>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="ExportStreamDeckManifest" AfterTargets="Build">
+
+    
+    <PropertyGroup>
+      <StreamDeckPluginManifestGenerationCommand>dotnet run --no-build -p "$(MSBuildProjectFullPath)" -- -export-config "$(StreamDeckPluginManifestPath)" -export-config-sdk "$(StreamDeckSdkPath)"</StreamDeckPluginManifestGenerationCommand>
+    </PropertyGroup>
+    <!--<Message Importance="high" Text="$(StreamDeckPluginManifestGenerationCommand)"></Message>-->
+    <Exec Command="$(StreamDeckPluginManifestGenerationCommand)" Condition="true"  LogStandardErrorAsError="true" IgnoreExitCode="false" StandardErrorImportance="high"  />
+
+    <ItemGroup>
+      <Content Include="$(StreamDeckPluginManifestPath)" Visible="false">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+  </Target>
+</Project>

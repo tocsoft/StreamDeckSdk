@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <StreamDeckSdkPath>$(MSBuildThisFileDirectory)..\</StreamDeckSdkPath>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+
+    <None Include="**\*.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="**\*.jpeg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="**\*.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="**\*.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="**\*.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="**\*.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+
+    <None Remove="bin\**\*.png" />
+    <None Remove="bin\**\*.jpeg"/>
+    <None Remove="bin\**\*.svg"/>
+    <None Remove="bin\**\*.html"/>
+    <None Remove="bin\**\*.css"/>
+    <None Remove="bin\**\*.js"/>
+    <None Remove="obj\**\*.png" />
+    <None Remove="obj\**\*.jpeg"/>
+    <None Remove="obj\**\*.svg"/>
+    <None Remove="obj\**\*.html"/>
+    <None Remove="obj\**\*.css"/>
+    <None Remove="obj\**\*.js"/>
+    
+    <None Include="$(StreamDeckSdkPath)resources\**\*">
+      <Visible>false</Visible>
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+
+  </ItemGroup>
+  
+</Project>

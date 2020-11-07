@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Tocsoft.StreamDeck.Sample": {
+      "commandName": "Project",
+      "commandLineArgs": "-x-export-config manifest.json",
+      "environmentVariables": {
+        "StreamDeckEmulatorCommand": "dotnet run -p C:\\Source\\Tocsoft.StreamDeck\\src\\StreamDeckEmulator\\StreamDeckEmulator.csproj -- "
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+﻿@inject StreamDeckEmulator.Services.PluginManager pluginManager
+@inject NavigationManager NavManager
+@page "/"
+
+<h1>Loaded Plugins</h1>
+
+<p>note: only plugins that support running on windows as 'native' plugins will work.</p>
+
+<ul>
+    @foreach (var p in pluginManager.Plugins)
+    {
+        <li>
+            <a href="plugins/@p.UUID">
+                @p.Name
+
+                <img src="_resources/@p.UUID/@(p.Icon).png" />
+            </a>
+        </li>
+    }
+</ul>
+
+@code{
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (pluginManager.Plugins.Count == 1)
+        {
+            NavManager.NavigateTo($"plugins/{pluginManager.Plugins[0].UUID}");
+        }
+
+        base.OnAfterRender(firstRender);
+    }
+}
