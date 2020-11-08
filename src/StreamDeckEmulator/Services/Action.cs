@@ -218,6 +218,18 @@ namespace StreamDeckEmulator.Services
             });
         }
 
+        internal void DeleteSettings()
+        {
+            try
+            {
+                File.Delete(this.settingsPath);
+            }
+            catch
+            {
+                //dont really care
+            }
+        }
+
         public async Task KeyUp()
         {
             var desiredState = this.State;

@@ -6,11 +6,11 @@ namespace StreamDeckEmulator.Services
 {
     public class ActionData
     {
-        public ActionState State { get; set; }
+        public ActionState State { get; set; } = ActionState.Default;
 
         public string Icon { get; set; }
 
         // title settings here!!!
-        public JObject Settings { get; set; }
+        public JObject Settings { get; set; } = new JObject();
     }
 }

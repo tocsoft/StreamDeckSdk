@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -32,6 +33,12 @@ namespace StreamDeckEmulator
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    var haswwwroot = Directory.Exists(Path.Combine(location, "wwwroot"));
+                    if (haswwwroot)
+                    {
+                        webBuilder.UseContentRoot(location);
+                    }
                     webBuilder.UseUrls("http://*:0");
                     webBuilder.UseStartup<Startup>();
                 });

@@ -182,6 +182,7 @@ namespace StreamDeckEmulator.Services
         public void DeleteAction(Action action)
         {
             actions.Remove(action);
+            action.DeleteSettings();
             UpdatePluginData(d =>
             {
                 d.Actions = actions.ToDictionary(x => x.ContextId, x => x.UUID);

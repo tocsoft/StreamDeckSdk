@@ -5,15 +5,9 @@ using Newtonsoft.Json.Linq;
 using PowerArgs.Cli;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.WebSockets;
-using System.Reflection;
-using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Text.Unicode;
 using System.Threading;
 using System.Threading.Tasks;
@@ -121,97 +115,6 @@ namespace Tocsoft.StreamDeck
         {
             // this is sending an event out to the streamdeck
             return client.SendJsonAsync(details, StreamDeckEvent.EventSerilizer);
-        }
-    }
-
-    internal class StreamDeckEmulator : IStreamDeckConnection, IDisposable
-    {
-        private readonly IHostApplicationLifetime applicationLifetime;
-        private readonly ILogger<StreamDeckConnection> logger;
-        private readonly EventManager eventManager;
-
-        // this is the thing that managest
-        public StreamDeckEmulator(IHostApplicationLifetime applicationLifetime, ILogger<StreamDeckConnection> logger, EventManager eventManager)
-        {
-            this.applicationLifetime = applicationLifetime;
-            this.logger = logger;
-            this.eventManager = eventManager;
-        }
-
-        public async Task Connect()
-        {
-            // start emulator process if availible else lets logout that global tool is unavailible
-            // emulator starting with a specific argument will get it to write out 
-            var command = Environment.GetEnvironmentVariable("StreamDeckEmulatorCommand") ?? "dotnet tool StreamDeckEmulator";
-            var parts = command.Split(new[] { ' ' });
-            var info = new ProcessStartInfo(parts[0]);
-            var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            foreach (var a in parts.Skip(1))
-            {
-                info.ArgumentList.Add(a);
-            }
-            info.ArgumentList.Add("--Pid");
-            info.ArgumentList.Add(Process.GetCurrentProcess().Id.ToString());
-            info.ArgumentList.Add("--Plugins");
-            info.ArgumentList.Add(dir);
-            info.RedirectStandardOutput = true;
-            info.UseShellExecute = false;
-            info.CreateNoWindow = false;
-
-            this.process = Process.Start(info);
-
-            this.process.Exited += (s, e) =>
-            {
-                applicationLifetime.StopApplication();
-            };
-
-            StringBuilder dataReceived = new StringBuilder();
-            Regex matcher = new Regex(@"(.*?)--STREAMDECK_REG_END--", RegexOptions.Singleline);
-            bool capturelines = false;
-            while (true)
-            {
-                var line = await process.StandardOutput.ReadLineAsync();
-                if (capturelines)
-                {
-                    var settings = StreamDeckEvent.Deserialize<StartupArguments>(line);
-                    this.connection = new StreamDeckConnection(settings, logger, eventManager, applicationLifetime);
-                    await this.connection.Connect();
-                    Process.Start(new ProcessStartInfo($"http://localhost:{settings.Port}") { UseShellExecute = true });
-                    break;
-                }
-                else if (line == "--STREAMDECK_REG_START--")
-                {
-                    capturelines = true;
-                }
-            }
-        }
-
-        private string dataReceived = "";
-        private Process process;
-        private IStreamDeckConnection connection;
-
-        public Task Disconnect()
-        {
-            // kill emulator process too here
-            var con = connection;
-            connection = null;
-            return con?.Disconnect() ?? Task.CompletedTask;
-        }
-
-        public IDisposable Listen<TEventType>(Func<TEventType, Task> callback) where TEventType : StreamDeckInboundEvent
-        {
-            return connection.Listen(callback);
-        }
-
-        public Task SendEvent<TEventType>(TEventType details) where TEventType : StreamDeckOutboundEvent
-        {
-            return connection.SendEvent(details);
-        }
-
-        public void Dispose()
-        {
-            process?.Kill();
-            process = null;
         }
     }
 }

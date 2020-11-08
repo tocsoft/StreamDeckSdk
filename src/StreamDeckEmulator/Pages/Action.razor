@@ -6,7 +6,7 @@
 @inject NavigationManager NavManager
 @implements IDisposable
 
-<button>Delete</button>
+<button @onclick="Delete">Delete</button>
 @if (plugin == null)
 {
     <p>Loading..</p>
@@ -53,7 +53,7 @@ else
                     device = "",
                     payload = new
                     {
-                        settings = action.Settings,
+                        settings = action.Settings ?? new Newtonsoft.Json.Linq.JObject(),
                         coordinates = new
                         {
                             column = 2,
@@ -85,12 +85,18 @@ else
 
     public IDisposable okListener;
     public IDisposable alertListener;
+    public IDisposable changeListener;
 
     protected override async Task OnInitializedAsync()
     {
         this.plugin = pluginManager.GetPlugin(pluginUUID);
         this.action = plugin.GetActionByContext(contextid);
 
+        this.changeListener = this.action.Listen<Tocsoft.StreamDeck.Events.StreamDeckOutboundActionEvent>(e =>
+         {
+             _ = this.InvokeAsync(this.StateHasChanged);
+             return Task.CompletedTask;
+         });
         this.okListener = this.action.Listen<Tocsoft.StreamDeck.Events.ShowOkEvent>(async e =>
         {
             okShowing = true;

@@ -11,17 +11,24 @@ else
     <h1>@plugin.Name</h1>
 
     <h2>Actions</h2>
-    <ul>
-        @foreach (var a in plugin.Actions)
-        {
-            <li>
-                <a href="plugins/@pluginUUID/actions/@a.ContextId">
-                    @a.Name - @a.ContextId
-                    <img src="@a.Icon" />
-                </a>
-            </li>
-        }
-    </ul>
+    @if (!plugin.Actions.Any())
+    {
+        <p>No instances created...create one below.</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (var a in plugin.Actions)
+            {
+                <li>
+                    <a href="plugins/@pluginUUID/actions/@a.ContextId">
+                        @a.Name - @a.ContextId
+                        <img src="@a.Icon" />
+                    </a>
+                </li>
+            }
+        </ul>
+    }
     <h2>Action Types</h2>
     <ul>
         @foreach (var a in plugin.ActionsTypes)
