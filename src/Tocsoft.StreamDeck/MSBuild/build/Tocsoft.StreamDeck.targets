@@ -44,7 +44,7 @@
 
     
     <PropertyGroup>
-      <StreamDeckPluginManifestGenerationCommand>dotnet run --no-build -p "$(MSBuildProjectFullPath)" -c $(Configuration) -- -export-config "$(StreamDeckPluginManifestPath)" -export-config-sdk "$(StreamDeckSdkPath)"</StreamDeckPluginManifestGenerationCommand>
+      <StreamDeckPluginManifestGenerationCommand>dotnet run --no-build --no-restore -p "$(MSBuildProjectFullPath)" -c $(Configuration) -- -export-config "$(StreamDeckPluginManifestPath)" -export-config-sdk "$(StreamDeckSdkPath)"</StreamDeckPluginManifestGenerationCommand>
     </PropertyGroup>
     <!--<Message Importance="high" Text="$(StreamDeckPluginManifestGenerationCommand)"></Message>-->
     <Exec Command="$(StreamDeckPluginManifestGenerationCommand)" Condition="true"  LogStandardErrorAsError="true" IgnoreExitCode="false" StandardErrorImportance="high"  />
