@@ -55,7 +55,7 @@ namespace Tocsoft.StreamDeck
         {
             if (actions == null)
             {
-                actions = configuration.Actions?.ToDictionary(x => x.UUID, x => x, StringComparer.OrdinalIgnoreCase) ?? new Dictionary<string, ActionDefinition>(); ;
+                actions = configuration.Actions?.ToDictionary(x => x.UUID, x => x, StringComparer.OrdinalIgnoreCase) ?? new Dictionary<string, ActionDefinition>();
             }
 
             try

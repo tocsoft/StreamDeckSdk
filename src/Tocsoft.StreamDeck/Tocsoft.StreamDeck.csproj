@@ -4,7 +4,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <InternalsVisibleTo>Tocsoft.StreamDeck.Tests</InternalsVisibleTo>
     <OutputType>Library</OutputType>
-    <IsPackable>false</IsPackable>
     <PackageOutputPath>../../build</PackageOutputPath>
   </PropertyGroup>
 

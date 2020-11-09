@@ -21,8 +21,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="$(AsPackageReference) == 'true'">
-    <PackageReference Include="Tocsoft.StreamDeck.ImageSharp" Version="0.0.0-alpha.0.3" />
-    <PackageReference Include="Tocsoft.StreamDeck" Version="0.0.0-alpha.0.3" />
+    <PackageReference Include="Tocsoft.StreamDeck.ImageSharp" Version="0.0.0-alpha.0.4" />
+    <PackageReference Include="Tocsoft.StreamDeck" Version="0.0.0-alpha.0.4" />
   </ItemGroup>
 
   <ItemGroup>

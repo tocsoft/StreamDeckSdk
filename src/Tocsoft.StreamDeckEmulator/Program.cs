@@ -17,8 +17,9 @@ namespace StreamDeckEmulator
     {
         public static void Main(string[] args)
         {
+#if DEBUG
             Debugger.Launch();
-
+#endif
             CreateHostBuilder(args).Build().Run();
         }
 

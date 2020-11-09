@@ -79,7 +79,7 @@ namespace Tocsoft.StreamDeck.Events
             {
                 n = n.Substring(0, n.Length - "Event".Length);
             }
-            events.Add(n, t);
+            events[n] = t;
         }
 
         internal static void RegisterEventType<T>() where T : StreamDeckEvent

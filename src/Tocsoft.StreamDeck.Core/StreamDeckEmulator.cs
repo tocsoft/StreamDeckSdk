@@ -30,6 +30,9 @@ namespace Tocsoft.StreamDeck
 
         public async Task Connect()
         {
+#if DEBUG
+            Debugger.Launch();
+#endif
             var cmd = "dotnet";
             var arguments = new string[] {
                 "tool",
@@ -96,7 +99,7 @@ namespace Tocsoft.StreamDeck
                             {
                                 foreach (var p in paths)
                                 {
-                                    var emulatorPath = Path.Combine(p, lib.path, "tools\\emulator\\StreamDeckEmulator.dll");
+                                    var emulatorPath = Path.Combine(p, lib.path, "tools\\emulator\\Tocsoft.StreamDeckEmulator.dll");
                                     if (File.Exists(emulatorPath))
                                     {
                                         cmd = $"dotnet";
