@@ -17,6 +17,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -29,6 +32,15 @@ jobs:
       run: dotnet test --no-restore --verbosity normal 
     - name: Pack
       run: dotnet pack --configuration Release --no-build --no-restore --verbosity normal
+    - uses: actions/upload-artifact@v2
+      with:
+        name: packages
+        path: ./build/*.nupkg
+    - uses: actions/upload-artifact@v2
+      with:
+        name: symbols
+        path: ./build/*.snupkg
+
     - name: Publish to MyGet
       if: (github.event_name == 'push')
       run: |
