@@ -44,5 +44,5 @@ jobs:
     - name: Publish to MyGet
       if: (github.event_name == 'push')
       run: |
-            dotnet nuget push ./build/*.nupkg -k ${{secrets.MYGET_TOKEN}} -s https://www.myget.org/F/tocsoft/api/v2/package
-            dotnet nuget push ./build/*.snupkg -k ${{secrets.MYGET_TOKEN}} -s https://www.myget.org/F/tocsoft/api/v3/index.json  
+            dotnet nuget push 'build/*.nupkg' -k ${{secrets.MYGET_TOKEN}} -s https://www.myget.org/F/tocsoft/api/v2/package
+            dotnet nuget push 'build/*.snupkg' -k ${{secrets.MYGET_TOKEN}} -s https://www.myget.org/F/tocsoft/api/v3/index.json  
