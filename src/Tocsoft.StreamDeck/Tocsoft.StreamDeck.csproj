@@ -4,11 +4,16 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <InternalsVisibleTo>Tocsoft.StreamDeck.Tests</InternalsVisibleTo>
     <OutputType>Library</OutputType>
+    <IsPackable>false</IsPackable>
     <PackageOutputPath>../../build</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Tocsoft.StreamDeck.Core\Tocsoft.StreamDeck.Core.csproj" />
+    <!-- <ProjectReference Include="..\Tocsoft.StreamDeckEmulator\Tocsoft.StreamDeckEmulator.csproj" >
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </ProjectReference> -->
   </ItemGroup>
   
   <PropertyGroup>
@@ -24,7 +29,7 @@
 
     <Message Text="Publishing tool for nuget embedding - '$(StreamDeckEnumlatorOutputPath)'" Importance="high" />
 
-    <MSBuild Projects="..\StreamDeckEmulator\StreamDeckEmulator.csproj" Targets="Publish" Properties="Configuration=Release;PublishDir=$(StreamDeckEnumlatorOutputPath)" />
+    <MSBuild Projects="..\Tocsoft.StreamDeckEmulator\Tocsoft.StreamDeckEmulator.csproj" Targets="Publish" Properties="Configuration=Release;PublishDir=$(StreamDeckEnumlatorOutputPath)" />
 
   </Target>
     <Target Name="ConnectBuildEmulator" AfterTargets="BuildEmulator">

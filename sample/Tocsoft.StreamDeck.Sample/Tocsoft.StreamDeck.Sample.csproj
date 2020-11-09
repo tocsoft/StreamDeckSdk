@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\src\Tocsoft.StreamDeck\MSBuild\build\Tocsoft.StreamDeck.props" />
+  <Import Project="..\..\src\Tocsoft.StreamDeck\Testing.props" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -10,14 +10,27 @@
     <PackageId>Tocsoft.StreamDeck.Sample</PackageId>
     <PackageProjectUrl>http://project.url/</PackageProjectUrl>
     <AssemblyName>Tocsoft.StreamDeck.Sample</AssemblyName>
+    <AsPackageReference>false</AsPackageReference>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
 
-  <ItemGroup>
+  <ItemGroup Condition="$(AsPackageReference) == 'false'">
     <ProjectReference Include="..\..\src\Tocsoft.StreamDeck.ImageSharp\Tocsoft.StreamDeck.ImageSharp.csproj" />
     <ProjectReference Include="..\..\src\Tocsoft.StreamDeck\Tocsoft.StreamDeck.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="$(AsPackageReference) == 'true'">
+    <PackageReference Include="Tocsoft.StreamDeck.ImageSharp" Version="0.0.0-alpha.0.3" />
+    <PackageReference Include="Tocsoft.StreamDeck" Version="0.0.0-alpha.0.3" />
+  </ItemGroup>
 
-  <Import Project="..\..\src\Tocsoft.StreamDeck\MSBuild\build\Tocsoft.StreamDeck.targets" />
+  <ItemGroup>
+    <PackageReference Include="MinVer" Version="2.3.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <Import Project="..\..\src\Tocsoft.StreamDeck\Testing.targets" />
 </Project>

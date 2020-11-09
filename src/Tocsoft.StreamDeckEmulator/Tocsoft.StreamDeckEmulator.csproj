@@ -7,6 +7,7 @@
     <ToolCommandName>StreamDeckEmulator</ToolCommandName>
     <PackageOutputPath>../../build</PackageOutputPath>
     <IsPackable>true</IsPackable>
+    <RootNamespace>StreamDeckEmulator</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

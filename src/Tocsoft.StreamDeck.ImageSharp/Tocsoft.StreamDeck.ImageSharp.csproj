@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Tocsoft.StreamDeck</RootNamespace>
+    <PackageOutputPath>../../build</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

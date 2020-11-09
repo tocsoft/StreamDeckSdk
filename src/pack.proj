@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.Build.Traversal/2.0.12">
+<PropertyGroup>
+    <PackInParallel>false</PackInParallel>
+</PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include=".\**\*.csproj" />
+    </ItemGroup>
+  </Project>

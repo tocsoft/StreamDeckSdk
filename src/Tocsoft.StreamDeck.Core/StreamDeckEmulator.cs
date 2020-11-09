@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -28,22 +30,96 @@ namespace Tocsoft.StreamDeck
 
         public async Task Connect()
         {
+            var cmd = "dotnet";
+            var arguments = new string[] {
+                "tool",
+                "run",
+                "StreamDeckEmulator",
+                "--"
+            };
+
+            // default commands, lets fallback to the emulators directly 
+            var envCmd = Environment.GetEnvironmentVariable("StreamDeckEmulatorCommand");
+            if (!string.IsNullOrEmpty(envCmd))
+            {
+                var parts = envCmd.TrimEnd().Split(new[] { ' ' });
+                cmd = parts[0];
+                arguments = parts.Skip(1).ToArray();
+            }
             // start emulator process if availible else lets logout that global tool is unavailible
             // emulator starting with a specific argument will get it to write out 
             var executionDirectory = Path.GetDirectoryName(typeof(StreamDeckEmulator).Assembly.Location);
 
+            var depsPath = Directory.GetFiles(executionDirectory, "*.deps.json", SearchOption.TopDirectoryOnly).SingleOrDefault();
 
+            if (!string.IsNullOrEmpty(depsPath))
+            {
+                var file = Newtonsoft.Json.JsonConvert.DeserializeObject<SimpleDepsFile>(File.ReadAllText(depsPath));
+                var lib = file.libraries?.Where(x => x.Key.StartsWith("Tocsoft.StreamDeck/")).Select(X => X.Value).SingleOrDefault();
+                if (lib != null)
+                {
+                    if (lib.type == "project")
+                    {
+                        var parent = executionDirectory;
+                        while (parent != null && !Directory.Exists(Path.Combine(parent, ".git")))
+                        {
+                            parent = Path.GetDirectoryName(parent);
+                        }
+                        if (!string.IsNullOrEmpty(parent))
+                        {
+                            var emulatorProject = Path.GetFullPath(Path.Combine(parent, "src/Tocsoft.StreamDeckEmulator/Tocsoft.StreamDeckEmulator.csproj"));
+
+                            if (File.Exists(emulatorProject))
+                            {
+                                cmd = "dotnet";
+                                arguments = new[] {
+                                    "run",
+                                    "-p",
+                                    emulatorProject,
+                                    "--"
+                                };
+                            }
+                        }
+                        // sln root 
+                        // this is running from reference to a project rather than the package
+                        // lets walkt the tree looking for the csproj and look for the 
+                    }
+                    else
+                    {
+
+                        var probPaths = Directory.GetFiles(executionDirectory, "*.runtimeconfig.dev.json", SearchOption.TopDirectoryOnly).SingleOrDefault();
+                        if (!string.IsNullOrEmpty(probPaths))
+                        {
+                            var obj = JObject.Parse(File.ReadAllText(probPaths));
+                            var paths = obj["runtimeOptions"]?["additionalProbingPaths"]?.Values<string>();
+                            if (paths != null)
+                            {
+                                foreach (var p in paths)
+                                {
+                                    var emulatorPath = Path.Combine(p, lib.path, "tools\\emulator\\StreamDeckEmulator.dll");
+                                    if (File.Exists(emulatorPath))
+                                    {
+                                        cmd = $"dotnet";
+                                        arguments = new[] {
+                                            emulatorPath,
+                                            "--"
+                                        };
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             // find the 'deps.json' files
             // find the 'runtime.dev.config'
             // if the type == project then use 'dotnet run' to the project.
             // if the type == 'package' then find the tools folder in the package folder and run the tool from there!
 
             // find the package store location
-            var command = Environment.GetEnvironmentVariable("StreamDeckEmulatorCommand") ?? "dotnet tool run StreamDeckEmulator -- ";
-            var parts = command.TrimEnd().Split(new[] { ' ' });
-            var info = new ProcessStartInfo(parts[0]);
+            var info = new ProcessStartInfo(cmd);
             var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            foreach (var a in parts.Skip(1))
+            foreach (var a in arguments)
             {
                 info.ArgumentList.Add(a);
             }
@@ -66,7 +142,7 @@ namespace Tocsoft.StreamDeck
             StringBuilder dataReceived = new StringBuilder();
             Regex matcher = new Regex(@"(.*?)--STREAMDECK_REG_END--", RegexOptions.Singleline);
             bool capturelines = false;
-            while (true)
+            while (!this.process.HasExited)
             {
                 var line = await process.StandardOutput.ReadLineAsync();
                 if (capturelines)
@@ -107,6 +183,17 @@ namespace Tocsoft.StreamDeck
         {
             process?.Kill();
             process = null;
+        }
+
+        private class SimpleDepsFile
+        {
+            public Dictionary<string, SimpleDepsFileLib> libraries { get; set; }
+        }
+        private class SimpleDepsFileLib
+        {
+            public string type { get; set; }
+            public string path { get; set; }
+
         }
     }
 }

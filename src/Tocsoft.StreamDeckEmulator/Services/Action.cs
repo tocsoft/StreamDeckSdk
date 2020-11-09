@@ -39,10 +39,11 @@ namespace StreamDeckEmulator.Services
                 Icon = $"data:image/png;base64," + Convert.ToBase64String(File.ReadAllBytes(path));
             }
 
-            eventManager.Register<SetImageEvent>(async c =>
+            eventManager.Register<SetImageEvent>(c =>
             {
                 this.Icon = c.Payload.Image;
                 UpdateActionData(d => d.Icon = this.Icon);
+                return Task.CompletedTask;
             });
 
             eventManager.Register<SetSettingsEvent>(SyncSettings);
