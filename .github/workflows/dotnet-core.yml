@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+defaults:
+  run:
+    shell: pwsh
+
 jobs:
   build:
 
@@ -28,5 +32,5 @@ jobs:
     - name: Publish to MyGet
       if: (github.event_name == 'push')
       run: |
-            dotnet nuget push .\build\*.nupkg ${{secrets.MYGET_TOKEN}} -s https://www.myget.org/F/tocsoft/api/v2/package
-            dotnet nuget push .\build\*.snupkg ${{secrets.MYGET_TOKEN}} -s https://www.myget.org/F/tocsoft/api/v3/index.json  
+            dotnet nuget push ./build/*.nupkg ${{secrets.MYGET_TOKEN}} -s https://www.myget.org/F/tocsoft/api/v2/package
+            dotnet nuget push ./build/*.snupkg ${{secrets.MYGET_TOKEN}} -s https://www.myget.org/F/tocsoft/api/v3/index.json  
