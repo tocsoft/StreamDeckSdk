@@ -13,7 +13,6 @@ namespace StreamDeckEmulator
         private readonly RequestDelegate _next;
         private readonly PluginManager pluginManager;
         private readonly FileExtensionContentTypeProvider fileExtensionContentTypeProvider = new FileExtensionContentTypeProvider();
-        private readonly IFileProvider fileProvider;
 
         public PluginResourceMiddleware(RequestDelegate next, PluginManager pluginManager)
         {

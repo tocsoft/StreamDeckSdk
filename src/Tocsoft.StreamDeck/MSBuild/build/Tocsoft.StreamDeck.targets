@@ -5,8 +5,8 @@
     <PropertyGroup>
       <PublishDirPlugin>$(PublishDir)</PublishDirPlugin>
       <StreamDeckPackageBaseIntermediateOutputPath>$(BaseIntermediateOutputPath)publish\plugin\</StreamDeckPackageBaseIntermediateOutputPath>
+      <StreamDeckPackagePath>$(PublishDirPlugin)$(AssemblyName.ToLower()).streamDeckPlugin</StreamDeckPackagePath>
       <PublishDir>$(StreamDeckPackageBaseIntermediateOutputPath)$(AssemblyName.ToLower()).sdPlugin\</PublishDir>
-      <StreamDeckPackagePath>$(PublishDirPlugin)\$(AssemblyName.ToLower()).streamDeckPlugin</StreamDeckPackagePath>
       <StreamDeckPluginManifestPath>$([System.IO.Path]::GetFullPath('$(OutDir)'))manifest.json</StreamDeckPluginManifestPath>
       <StreamDeckPluginManifestPathPublished>$([System.IO.Path]::GetFullPath('$(PublishDir)'))</StreamDeckPluginManifestPathPublished>
     </PropertyGroup>
@@ -30,7 +30,7 @@
     <RemoveDir Directories="$(_fullPublishDestFolderPath)" />
     <MakeDir Directories="$(_fullPublishDestFolderPath)" />
     <Exec Command="$(StreamDeckPluginPackageCommand)" Condition="true"  LogStandardErrorAsError="true"   />
-    <!--<ZipDirectory DestinationFile="$(StreamDeckPackagePath)" SourceDirectory="$(StreamDeckPackageBaseIntermediateOutputPath)" Overwrite="true" />-->
+    <Message Text="$(AssemblyName) -> $(StreamDeckPackagePath)" Importance="high" />
   </Target>
 
   <Target Name="ExportStreamDeckPluginPrepareForBuild" BeforeTargets="Build">

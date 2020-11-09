@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tocsoft.StreamDeck\Tocsoft.StreamDeck.csproj" />
+    <ProjectReference Include="..\Tocsoft.StreamDeck.Core\Tocsoft.StreamDeck.Core.csproj" />
   </ItemGroup>
 
 </Project>

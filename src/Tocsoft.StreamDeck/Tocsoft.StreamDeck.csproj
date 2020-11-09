@@ -4,24 +4,42 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <InternalsVisibleTo>Tocsoft.StreamDeck.Tests</InternalsVisibleTo>
     <OutputType>Library</OutputType>
+    <PackageOutputPath>../../build</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.4" />
-    <PackageReference Include="PowerArgs" Version="3.6.0" />
-    <PackageReference Include="MinVer" Version="2.3.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <ProjectReference Include="..\Tocsoft.StreamDeck.Core\Tocsoft.StreamDeck.Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
+  
+  <PropertyGroup>
+    <BeforePack>BuildEmulator;$(BeforePack);</BeforePack>
+  </PropertyGroup>
 
-    <Content Include="MSBuild\**\*">
-      <PackagePath>\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
-    </Content>
-    
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Tocsoft.StreamDeck.Shared\Tocsoft.StreamDeck.Shared.csproj" />
-  </ItemGroup>
+
+  <Target Name="BuildEmulator">
+    <PropertyGroup>
+      <StreamDeckEnumlatorOutputPath>$(BaseIntermediateOutputPath)publish\emulator\</StreamDeckEnumlatorOutputPath>
+      <StreamDeckEnumlatorOutputPath>$([System.IO.Path]::GetFullPath('$(StreamDeckEnumlatorOutputPath)'))</StreamDeckEnumlatorOutputPath>
+    </PropertyGroup>
+
+    <Message Text="Publishing tool for nuget embedding - '$(StreamDeckEnumlatorOutputPath)'" Importance="high" />
+
+    <MSBuild Projects="..\StreamDeckEmulator\StreamDeckEmulator.csproj" Targets="Publish" Properties="Configuration=Release;PublishDir=$(StreamDeckEnumlatorOutputPath)" />
+
+  </Target>
+    <Target Name="ConnectBuildEmulator" AfterTargets="BuildEmulator">
+    <ItemGroup>
+
+      <Content Include="$(StreamDeckEnumlatorOutputPath)**\*" Exclude="@(Content)">
+        <PackagePath>\tools\emulator\</PackagePath>
+      </Content>
+      
+      <Content Include="MSBuild\**\*" Exclude="@(Content)">
+        <PackagePath>\</PackagePath>
+      </Content>
+      
+    </ItemGroup>
+  </Target>
+
+  <!--Publish the emulator and push the contents of the publish folder into the compiled nuget package!!!-->
 </Project>

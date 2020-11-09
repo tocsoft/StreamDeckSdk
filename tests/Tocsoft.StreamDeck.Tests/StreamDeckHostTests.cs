@@ -16,7 +16,7 @@ namespace Tocsoft.StreamDeck.Tests
         private Mock<IStreamDeckConnection> connectionMock = new Mock<IStreamDeckConnection>();
         private Mock<IDisposable> willAppearListenerMock = new Mock<IDisposable>();
         private Mock<IDisposable> willDisappearListenerMock = new Mock<IDisposable>();
-        private StreamDeckConfiguration configuration = new StreamDeckConfiguration();
+        private Mock<IStreamDeckConfiguration> configuration = new Mock<IStreamDeckConfiguration>();
         private FakeServiceProvider services = new FakeServiceProvider();
         private FakeLogger<StreamDeckHost> logger = new FakeLogger<StreamDeckHost>();
         private StreamDeckHost host;
@@ -25,7 +25,7 @@ namespace Tocsoft.StreamDeck.Tests
         {
             this.connectionMock.Setup(x => x.Listen(It.IsAny<Func<WillAppearEvent, Task>>())).Returns(willAppearListenerMock.Object);
             this.connectionMock.Setup(x => x.Listen(It.IsAny<Func<WillDisappearEvent, Task>>())).Returns(willDisappearListenerMock.Object);
-            this.host = new StreamDeckHost(this.connectionMock.Object, this.configuration, this.services, logger);
+            this.host = new StreamDeckHost(this.connectionMock.Object, this.configuration.Object, this.services, logger);
         }
 
         [Fact]
@@ -94,13 +94,13 @@ namespace Tocsoft.StreamDeck.Tests
         [Fact]
         public async Task StartActionInitializesManager()
         {
-            var actionDef = new ActionDefinition(new ActionDefinitionBuilder(typeof(StreamDeckHostTests)));
+            var actionDef = new ActionDefinitionBuilder(typeof(StreamDeckHostTests)).Build();
             var triggerEvent = new WillAppearEvent
             {
-                Action = "action",
+                Action = actionDef.UUID,
                 Context = "ctx"
             };
-            this.configuration.Actions = new[] { actionDef };
+            this.configuration.Setup(x => x.Actions).Returns(new[] { actionDef });
 
             var moqProvider = new Mock<IActionManagerProvider>();
             this.services.AddService(moqProvider.Object);
@@ -114,20 +114,20 @@ namespace Tocsoft.StreamDeck.Tests
         [Fact]
         public async Task StopActionInitializesManager()
         {
-            var actionDef = new ActionDefinition(new ActionDefinitionBuilder(typeof(StreamDeckHostTests)));
-            this.configuration.Actions = new[] { actionDef };
+            var actionDef = new ActionDefinitionBuilder(typeof(StreamDeckHostTests)).Build();
+            this.configuration.Setup(x => x.Actions).Returns(new[] { actionDef });
 
             var moqProvider = new Mock<IActionManagerProvider>();
             this.services.AddService(moqProvider.Object);
 
             await this.host.StartAction(new WillAppearEvent
             {
-                Action = "action",
+                Action = actionDef.UUID,
                 Context = "ctx"
             });
             await this.host.StopAction(new WillDisappearEvent
             {
-                Action = "action",
+                Action = actionDef.UUID,
                 Context = "ctx"
             });
             var scope = Assert.Single(this.services.Scopes);
