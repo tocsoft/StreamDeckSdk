@@ -21,8 +21,11 @@
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <SourceRoot Include="$(MSBuildThisFileDirectory)/.."/>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <SourceRoot Include="$(MSBuildThisFileDirectory)/.."/>
+  </ItemGroup>
 
   <PropertyGroup>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
