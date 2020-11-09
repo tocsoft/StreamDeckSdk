@@ -1,0 +1,34 @@
+name: .NET Core
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal 
+    - name: Pack
+      run: dotnet pack --configuration Release -no-build --no-restore --verbosity normal
+    - name: Publish to MyGet
+      if: (github.event_name == 'push')
+      run: |
+            dotnet nuget push .\build\*.nupkg ${{secrets.MYGET_TOKEN}} -Source https://www.myget.org/F/tocsoft/api/v2/package
+            dotnet nuget push .\build\*.snupkg ${{secrets.MYGET_TOKEN}} -Source https://www.myget.org/F/tocsoft/api/v3/index.json  
