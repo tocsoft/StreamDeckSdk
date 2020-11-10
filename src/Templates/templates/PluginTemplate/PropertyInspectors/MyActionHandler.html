@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Open PRs Property Inspector</title>
+    <link rel="stylesheet" href="sdpi.css">
+</head>
+<body>
+    <div class="sdpi-wrapper">
+        <!-- for more examples of the types of fields supported in property inspector visit:
+            Elgato Github PiSamples -> https://github.com/elgatosf/streamdeck-pisamples
+            and
+            Elgato SDK Documentation -> https://developer.elgato.com/documentation/stream-deck/sdk/property-inspector/
+    -->
+
+    <div type="textarea" class="sdpi-item">
+        <div class="sdpi-item-label">Value 1</div>
+        <span class="sdpi-item-value textarea">
+            <textarea type="textarea" id="value1" onchange="sendSettings()"></textarea>
+        </span>
+    </div>
+    <div type="textarea" class="sdpi-item">
+        <div class="sdpi-item-label">Value 2</div>
+        <span class="sdpi-item-value textarea">
+            <textarea type="textarea" id="value2" onchange="sendSettings()"></textarea>
+        </span>
+    </div>
+
+    </div>
+
+    <script>
+        var uuid, actionInfo;
+
+        function sendSettings() {
+            var value1 = document.getElementById("value1").value;
+            var value2 = document.getElementById("value2").value;
+
+            const json = {
+                "action": actionInfo.action,
+                "event": "setSettings",
+                "context": actionInfo.context, // as received from the 'connectElgatoStreamDeckSocket' event
+                "payload": {
+                    "value1" : value1,
+                    "value2" : value2
+                }
+            };
+
+            websocket.send(JSON.stringify(json));
+        }
+        
+        function updateUiValues(settings){
+
+            if(settings){
+                if(settings.value1){
+                    document.getElementById("value1").value = settings.value1;
+                }
+                if(settings.value2){
+                    document.getElementById("value2").value = settings.value2;
+                }
+            }
+        }
+
+        function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, inActionInfo) {
+            uuid = inUUID;
+            actionInfo = JSON.parse(inActionInfo);
+            inInfo = JSON.parse(inInfo);
+            websocket = new WebSocket('ws://localhost:' + inPort);
+
+            websocket.onopen = function () {
+                var json = { event: inRegisterEvent, uuid: inUUID };
+                // register property inspector to Stream Deck
+                websocket.send(JSON.stringify(json));
+            };
+            
+            updateUiValues(actionInfo.payload.settings);
+
+            websocket.onmessage = function (evt) {
+                if (evt.event == "didReceiveSettings") {
+                    updateUiValues(evt.payload.settings);
+                }
+            };
+        }
+
+    </script>
+</body>
+</html>

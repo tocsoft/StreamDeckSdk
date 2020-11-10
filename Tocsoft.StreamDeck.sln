@@ -17,6 +17,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tocsoft.StreamDeck.Core", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tocsoft.StreamDeckEmulator", "src\Tocsoft.StreamDeckEmulator\Tocsoft.StreamDeckEmulator.csproj", "{7E8E4B51-D279-41B8-9F72-076F7894D752}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Templates", "src\Templates\Templates.csproj", "{2FC19272-DFAC-4FB0-88F8-3A88982E8B05}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{D1DEDFE7-94D7-43E1-8C62-9389DCA91CDB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,11 +51,16 @@ Global
 		{7E8E4B51-D279-41B8-9F72-076F7894D752}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E8E4B51-D279-41B8-9F72-076F7894D752}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E8E4B51-D279-41B8-9F72-076F7894D752}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FC19272-DFAC-4FB0-88F8-3A88982E8B05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FC19272-DFAC-4FB0-88F8-3A88982E8B05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FC19272-DFAC-4FB0-88F8-3A88982E8B05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FC19272-DFAC-4FB0-88F8-3A88982E8B05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{17EAB65F-F25B-460F-BC69-BAC716166EC3} = {D1DEDFE7-94D7-43E1-8C62-9389DCA91CDB}
 		{CCADABA7-C1A3-4278-8759-D5871FD9023E} = {FE6AA14C-733C-4498-AE69-EC1AE392A602}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
