@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Tocsoft.StreamDeck</RootNamespace>
     <PackageOutputPath>../../build</PackageOutputPath>
+    <Product>Stream Deck Plugin SDK ImageSharp intergration</Product>
+    <Description>SDK for building stream deck plugins</Description>
   </PropertyGroup>
 
   <ItemGroup>

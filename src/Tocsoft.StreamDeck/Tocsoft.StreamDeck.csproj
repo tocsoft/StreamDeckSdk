@@ -5,19 +5,14 @@
     <InternalsVisibleTo>Tocsoft.StreamDeck.Tests</InternalsVisibleTo>
     <OutputType>Library</OutputType>
     <PackageOutputPath>../../build</PackageOutputPath>
+    <BeforePack>BuildEmulator;$(BeforePack);</BeforePack>
+    <Product>Stream Deck Plugin SDK</Product>
+    <Description>SDK for building stream deck plugins</Description>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Tocsoft.StreamDeck.Core\Tocsoft.StreamDeck.Core.csproj" />
-    <!-- <ProjectReference Include="..\Tocsoft.StreamDeckEmulator\Tocsoft.StreamDeckEmulator.csproj" >
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </ProjectReference> -->
   </ItemGroup>
-  
-  <PropertyGroup>
-    <BeforePack>BuildEmulator;$(BeforePack);</BeforePack>
-  </PropertyGroup>
 
 
   <Target Name="BuildEmulator">

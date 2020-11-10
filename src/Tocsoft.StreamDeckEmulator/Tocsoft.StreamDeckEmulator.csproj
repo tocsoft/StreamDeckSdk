@@ -8,6 +8,8 @@
     <PackageOutputPath>../../build</PackageOutputPath>
     <IsPackable>true</IsPackable>
     <RootNamespace>StreamDeckEmulator</RootNamespace>
+    <Product>Stream Deck Emulator</Product>
+    <Description>Emulator for running streamdeck plugins without using the office streamdeck software.</Description>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />

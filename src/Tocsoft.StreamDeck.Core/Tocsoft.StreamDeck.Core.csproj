@@ -6,6 +6,8 @@
     <LangVersion>latest</LangVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageOutputPath>../../build</PackageOutputPath>
+    <Product>Stream Deck Plugin SDK</Product>
+    <Description>SDK for building stream deck plugins</Description>
   </PropertyGroup>
 
   <ItemGroup>

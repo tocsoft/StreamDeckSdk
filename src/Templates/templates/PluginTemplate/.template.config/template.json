@@ -3,7 +3,7 @@
   "author": "Tocsoft",
   "classifications": [ "StreamDeck" ],
   "identity": "Tocsoft.StreamDeck.CSharp",
-  "name": "Plugin for a Stream Deck",
+  "name": "Stream Deck Plugin",
   "shortName": "streamdeckplugin",
   "tags": {
     "language": "C#",
