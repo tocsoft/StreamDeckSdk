@@ -11,10 +11,8 @@
   -->
   <PropertyGroup>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Product>Stream Deck Plugin SDK</Product>
     <Company>Tocsoft</Company>
     <Authors>Tocsoft</Authors>
-    <Description>SDK for building stream deck plugins</Description>
     <RepositoryUrl>https://github.com/tocsoft/StreamDeckSdk</RepositoryUrl>
     <PackageProjectUrl>https://github.com/tocsoft/StreamDeckSdk</PackageProjectUrl>
     <PackageTags>streamdeck</PackageTags>
