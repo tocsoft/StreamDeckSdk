@@ -104,8 +104,7 @@ namespace Tocsoft.StreamDeck
                                     {
                                         cmd = $"dotnet";
                                         arguments = new[] {
-                                            emulatorPath,
-                                            "--"
+                                            emulatorPath
                                         };
                                     }
                                 }
