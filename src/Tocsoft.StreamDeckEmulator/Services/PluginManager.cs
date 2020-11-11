@@ -60,8 +60,6 @@ namespace StreamDeckEmulator.Services
 
         internal void Initialise(string address)
         {
-            Debugger.Launch();
-
             this.WebSocketPort = new Uri(address).Port;
             var pluginPath = LaunchSettings.Plugin ?? "%APPDATA%\\Elgato\\StreamDeck\\Plugins";
 
