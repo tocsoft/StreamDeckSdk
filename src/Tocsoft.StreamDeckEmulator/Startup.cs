@@ -37,7 +37,8 @@ namespace StreamDeckEmulator
                 .Bind(Configuration)
                 .Configure(s =>
                 {
-                    if (string.IsNullOrEmpty(s.Plugin))
+                    // if both pid and folder is null then set it to the full streamdeck location
+                    if (string.IsNullOrEmpty(s.Pid) && string.IsNullOrEmpty(s.Plugin))
                     {
                         // if windows 
                         s.Plugin = "%APPDATA%\\Elgato\\StreamDeck\\Plugins";

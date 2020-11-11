@@ -69,18 +69,15 @@ namespace StreamDeckEmulator.Services
 
             if (int.TryParse(LaunchSettings.Pid, out var pid))
             {
-                if (pluginFolders.Count > 1)
-                {
-                    throw new Exception("Only a single plugin supported when specifying a 'pid'");
-                }
-                var pluginFolder = pluginFolders.Single();
-
                 var process = Process.GetProcessById(pid);
+
                 if (process == null)
                 {
                     applicationLifetime.StopApplication();
                     return;
                 }
+
+                var pluginFolder = Path.GetDirectoryName(process.MainModule.FileName);
 
                 var p = new Plugin(this, pluginFolder, process);
                 this.plugins.Add(p);

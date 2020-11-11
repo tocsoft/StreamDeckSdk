@@ -121,15 +121,12 @@ namespace Tocsoft.StreamDeck
 
             // find the package store location
             var info = new ProcessStartInfo(cmd);
-            var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             foreach (var a in arguments)
             {
                 info.ArgumentList.Add(a);
             }
             info.ArgumentList.Add("--Pid");
             info.ArgumentList.Add(Process.GetCurrentProcess().Id.ToString());
-            info.ArgumentList.Add("--Plugin");
-            info.ArgumentList.Add(dir);
             info.RedirectStandardOutput = true;
             info.UseShellExecute = false;
             info.CreateNoWindow = false;
