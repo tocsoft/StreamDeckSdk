@@ -12,7 +12,7 @@
     /// Represents an outbound event a plugin can fire to the streamdeck with a strongly typed payload
     /// </summary>
     /// <typeparam name="T">payload type</typeparam>
-    public abstract class StreamDeckOutboundEvent<T> : StreamDeckEvent
+    public abstract class StreamDeckOutboundEvent<T> : StreamDeckOutboundEvent
     {
         /// <summary>
         /// the event payload

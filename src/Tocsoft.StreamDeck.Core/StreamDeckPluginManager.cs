@@ -1,57 +1,67 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using PowerArgs;
+using System;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Tocsoft.StreamDeck.Events;
 
 namespace Tocsoft.StreamDeck
 {
     internal class StreamDeckPluginManager : IPluginManager
     {
-        public StreamDeckPluginManager()
+        private readonly IStreamDeckConnection streamDeckConnection;
+
+        public StreamDeckPluginManager(IStreamDeckConnection streamDeckConnection)
         {
+            this.streamDeckConnection = streamDeckConnection;
+
+            streamDeckConnection.Listen<DidReceiveGlobalSettingsEvent>(s =>
+            {
+                this.CurrentSettings = s.Settings.Settings;
+                return Task.CompletedTask;
+            });
         }
 
-        public Task LogMessageAsync(string message)
-        {
-            throw new NotImplementedException();
-        }
+        public Task LogMessageAsync(string message) =>
+            streamDeckConnection.SendEvent(new LogMessageEvent
+            {
+                Payload = new LogMessagePayload
+                {
+                    Message = message
+                }
+            });
 
-        public Task OpenUrlAsync(string url)
-        {
-            throw new NotImplementedException();
-        }
+        public Task OpenUrlAsync(string url) =>
+            streamDeckConnection.SendEvent(new OpenUrlEvent
+            {
+                Payload = url
+            });
 
-        public JsonDocument CurrentSettings { get; private set; }
+        public JObject CurrentSettings { get; private set; } = new JObject();
 
-        public void OnSettingChange(Action<JsonDocument> action)
-        {
-        }
+        public IDisposable OnSettingChange(Action<JObject> action) =>
+            streamDeckConnection.Listen<DidReceiveGlobalSettingsEvent>(s =>
+            {
+                action(s.Settings.Settings);
+                return Task.CompletedTask;
+            });
     }
 
     internal class StreamDeckPluginManager<TGlobalSettings> : IPluginManager<TGlobalSettings>
     {
+        private readonly StreamDeckPluginManager manager;
+
         public StreamDeckPluginManager(StreamDeckPluginManager manager)
         {
-            UpdateSettings(manager.CurrentSettings);
-            manager.OnSettingChange(x =>
-            {
-                UpdateSettings(x);
-            });
+            this.manager = manager;
         }
 
-        private void UpdateSettings(JsonDocument json)
-        {
-            var jsonText = json.RootElement.GetRawText();
-            var settings = JsonSerializer.Deserialize<TGlobalSettings>(jsonText);
-            CurrentSettings = settings;
+        public TGlobalSettings CurrentSettings => manager.CurrentSettings.ToObject<TGlobalSettings>();
 
-            //trigger callbacks here
-        }
-
-        public TGlobalSettings CurrentSettings { get; private set; }
-
-        public void OnSettingChange(Action<TGlobalSettings> action)
-        {
-
-        }
+        public IDisposable OnSettingChange(Action<TGlobalSettings> action)
+            => manager.OnSettingChange(s =>
+                {
+                    action(s.ToObject<TGlobalSettings>());
+                });
     }
 }

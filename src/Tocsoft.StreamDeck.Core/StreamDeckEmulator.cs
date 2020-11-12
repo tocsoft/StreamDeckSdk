@@ -170,7 +170,7 @@ namespace Tocsoft.StreamDeck
 
         public IDisposable Listen<TEventType>(Func<TEventType, Task> callback) where TEventType : StreamDeckInboundEvent
         {
-            return connection.Listen(callback);
+            return connection?.Listen(callback);
         }
 
         public Task SendEvent<TEventType>(TEventType details) where TEventType : StreamDeckOutboundEvent

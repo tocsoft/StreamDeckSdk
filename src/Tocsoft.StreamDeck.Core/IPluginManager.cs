@@ -38,6 +38,6 @@ namespace Tocsoft.StreamDeck
         /// register a callback for whenever updated global settings are provided.
         /// </summary>
         /// <param name="callback">action to be called when the global setting are updated.</param>
-        void OnSettingChange(Action<TGlobalSettings> callback);
+        IDisposable OnSettingChange(Action<TGlobalSettings> callback);
     }
 }

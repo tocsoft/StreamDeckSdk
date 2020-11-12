@@ -69,7 +69,14 @@ namespace StreamDeckEmulator.Services
                     this.actions.Add(new Action(la.Key, m, this));
                 }
             }
+
+            eventManager.Register<OpenUrlEvent>(c =>
+            {
+                Process.Start(new ProcessStartInfo(c.Payload) { UseShellExecute = true });
+                return Task.CompletedTask;
+            });
         }
+
         private void UpdatePluginData(Action<PluginData> updater)
         {
             var data = LoadPluginData();

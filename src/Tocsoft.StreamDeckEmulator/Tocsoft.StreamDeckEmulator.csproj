@@ -16,7 +16,7 @@
     <PackageReference Include="PowerArgs" Version="3.6.0" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Tocsoft.StreamDeck.Core\**\*.cs" Exclude="..\Tocsoft.StreamDeck.Core\bin\**\*;..\Tocsoft.StreamDeck.Core\obj\**\*;" >
+    <Compile Include="..\Tocsoft.StreamDeck.Core\**\*.cs" Exclude="..\Tocsoft.StreamDeck.Core\bin\**\*;..\Tocsoft.StreamDeck.Core\obj\**\*;">
       <Link>Core\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </Compile>
   </ItemGroup>

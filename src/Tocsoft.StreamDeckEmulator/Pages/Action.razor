@@ -5,7 +5,36 @@
 @inject IJSRuntime jsRuntime
 @inject NavigationManager NavManager
 @implements IDisposable
+<style>
+    #action-btn {
+        cursor: pointer;
+        width: 72px;
+        height: 72px;
+        background-color: black;
+        position: relative;
+    }
+        #action-btn img {
+            pointer-events: none;
+            position: absolute;
+        }
+        #action-btn img.action-img {
+            width: 72px;
+            top:0;
+            left:0;
+        }
 
+        #action-btn.mousedown img.action-img {
+            width: 56px;
+            top: 9px;
+            left: 9px;
+        }
+
+        #action-btn img.overlay {
+            width: 40px;
+            top: 16px;
+            left: 16px;
+        }
+</style>
 <button @onclick="Delete">Delete</button>
 @if (plugin == null)
 {
@@ -17,18 +46,19 @@ else
 
     <h2>@action.Name - @action.ContextId</h2>
 
-    if (okShowing)
-    {
-        <strong>OK!!</strong>
-    }
-    if (alertShowing)
-    {
-        <strong>Alert!!</strong>
-    }
-    <br />
+
     <!-- this hsould be current image as a encoded string not a path -->
-    <img src="@action.Icon" />
-    <button @onmousedown="KeyDown" @onmouseup="KeyUp">Action Button</button>
+    <div id="action-btn" class="@(mouseDown?"mousedown":"")" @onmousedown="KeyDown" @onmouseup="KeyUp" @onmouseout="KeyUp">
+        <img src="@action.Icon" class="action-img" />
+        @if (okShowing)
+        {
+            <img src="/icons/check.png" alt="OK" class="overlay" />
+        }
+        @if (alertShowing)
+        {
+            <img src="/icons/alert.png" alt="Alert" class="overlay" />
+        }
+    </div>
 
     <br />
     <form>
@@ -77,6 +107,7 @@ else
     public string pluginUUID { get; set; }
     [ParameterAttribute]
     public string contextid { get; set; }
+    public bool mouseDown { get; set; }
     public bool okShowing { get; set; }
     public bool alertShowing { get; set; }
 
@@ -93,10 +124,10 @@ else
         this.action = plugin.GetActionByContext(contextid);
 
         this.changeListener = this.action.Listen<Tocsoft.StreamDeck.Events.StreamDeckOutboundActionEvent>(e =>
-         {
-             _ = this.InvokeAsync(this.StateHasChanged);
-             return Task.CompletedTask;
-         });
+        {
+            _ = this.InvokeAsync(this.StateHasChanged);
+            return Task.CompletedTask;
+        });
         this.okListener = this.action.Listen<Tocsoft.StreamDeck.Events.ShowOkEvent>(async e =>
         {
             okShowing = true;
@@ -137,14 +168,23 @@ else
         }
     }
 
+
     protected async Task KeyDown()
     {
-        await this.action.KeyDown();
+        if (!mouseDown)
+        {
+            mouseDown = true;
+            await this.action.KeyDown();
+        }
     }
 
     protected async Task KeyUp()
     {
-        await this.action.KeyUp();
+        if (mouseDown)
+        {
+            await this.action.KeyUp();
+            mouseDown = false;
+        }
     }
 
     protected async Task Show()
