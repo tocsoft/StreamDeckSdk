@@ -42,12 +42,17 @@ namespace Tocsoft.StreamDeck
             var buffer = new Memory<byte>(new byte[1024 * 4]);
             var result = await client.ReceiveAsync(buffer, cancellationToken);
 
-            do
+            while (true)
             {
                 var slice = buffer.Slice(0, result.Count);
                 json += Encoding.UTF8.GetString(slice.ToArray());
+                if (result.EndOfMessage)
+                {
+                    break;
+                }
+                result = await client.ReceiveAsync(buffer, cancellationToken);
             }
-            while (!result.EndOfMessage);
+
 
             return (json, result.MessageType == WebSocketMessageType.Close);
         }
