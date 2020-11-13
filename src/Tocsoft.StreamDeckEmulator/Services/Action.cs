@@ -47,6 +47,9 @@ namespace StreamDeckEmulator.Services
             });
 
             eventManager.Register<SetSettingsEvent>(SyncSettings);
+
+            // proxy send to property inspector event
+            eventManager.Register<SendToPropertyInspectorEvent>(c => propertyEditorConnection?.Send(c) ?? Task.CompletedTask);
         }
 
 
