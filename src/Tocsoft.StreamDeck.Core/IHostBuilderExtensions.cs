@@ -77,15 +77,17 @@ namespace Tocsoft.StreamDeck
                 {
                     return configBuilder.Build();
                 });
-
-                if (runInMemory)
+                if (!exportConfig)
                 {
-                    s.AddSingleton<IStreamDeckConnection, StreamDeckEmulator>();
-                }
-                else
-                {
-                    s.AddSingleton(registrationArgs);
-                    s.AddSingleton<IStreamDeckConnection, StreamDeckConnection>();
+                    if (runInMemory)
+                    {
+                        s.AddSingleton<IStreamDeckConnection, StreamDeckEmulator>();
+                    }
+                    else
+                    {
+                        s.AddSingleton(registrationArgs);
+                        s.AddSingleton<IStreamDeckConnection, StreamDeckConnection>();
+                    }
                 }
             });
 

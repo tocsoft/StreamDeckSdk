@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using PowerArgs.Cli;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.WebSockets;
 using System.Text.Json;

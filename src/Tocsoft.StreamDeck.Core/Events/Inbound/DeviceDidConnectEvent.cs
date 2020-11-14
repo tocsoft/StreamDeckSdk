@@ -8,6 +8,6 @@
         /// <summary>
         /// the details of the connected device.
         /// </summary>
-        public DeviceInfo Device { get; set; }
+        public DeviceInfo DeviceInfo { get; set; }
     }
 }

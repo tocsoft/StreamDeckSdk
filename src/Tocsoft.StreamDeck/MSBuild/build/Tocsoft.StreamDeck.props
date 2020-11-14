@@ -2,7 +2,9 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <StreamDeckSdkPath Condition="'$(StreamDeckSdkPath)' == ''">$(MSBuildThisFileDirectory)..\</StreamDeckSdkPath>
+    
     <AutoInstall Condition="'$(AutoInstall)' == ''">false</AutoInstall>
+    
     <StreamDeckPluginInstallDir>%APPDATA%\Elgato\StreamDeck\Plugins\</StreamDeckPluginInstallDir>
   </PropertyGroup>
 

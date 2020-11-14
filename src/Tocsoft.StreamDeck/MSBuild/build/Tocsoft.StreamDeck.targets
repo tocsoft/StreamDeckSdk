@@ -3,52 +3,76 @@
 
   <Target Name="ConfigureStreamDeckProperties" >
     <PropertyGroup>
-      <PublishDirPlugin>$(PublishDir)</PublishDirPlugin>
-      <StreamDeckPluginFolderName>$(AssemblyName.ToLower()).sdPlugin</StreamDeckPluginFolderName>
+      <StreamDeckPluginManifestPath>$([System.IO.Path]::GetFullPath('$(OutDir)'))manifest.json</StreamDeckPluginManifestPath>
+
+      <StreamDeckPluginId>$(AssemblyName.ToLower())</StreamDeckPluginId>
+      <StreamDeckPluginPath>$(StreamDeckPluginId).sdPlugin</StreamDeckPluginPath>
+      <StreamDeckPackagePath>$(StreamDeckPluginId).streamDeckPlugin</StreamDeckPackagePath>
+      
+      <PublishDir>$(PublishDir)$(StreamDeckPluginPath)\</PublishDir>
+      <IsPackable>false</IsPackable>
+      <WarnOnPackingNonPackableProject>false</WarnOnPackingNonPackableProject>
+      
+      
+      <PublishDir Condition="'$(AutoInstall)' == 'true'">$([System.Environment]::ExpandEnvironmentVariables($(StreamDeckPluginInstallDir)))$(StreamDeckPluginPath)</PublishDir>
+      
+      <!--<PublishDirPlugin>$(PublishDir)</PublishDirPlugin>
       <StreamDeckPackageBaseIntermediateOutputPath>$(BaseIntermediateOutputPath)publish\plugin\</StreamDeckPackageBaseIntermediateOutputPath>
-      <StreamDeckPackagePath>$(PublishDirPlugin)$(AssemblyName.ToLower()).streamDeckPlugin</StreamDeckPackagePath>
+      
       <PublishDir>$(StreamDeckPackageBaseIntermediateOutputPath)$(StreamDeckPluginFolderName)\</PublishDir>
 
       <StreamDeckPluginManifestPath>$([System.IO.Path]::GetFullPath('$(OutDir)'))manifest.json</StreamDeckPluginManifestPath>
-      <StreamDeckPluginManifestPathPublished>$([System.IO.Path]::GetFullPath('$(PublishDir)'))</StreamDeckPluginManifestPathPublished>
+      <StreamDeckPluginManifestPathPublished>$([System.IO.Path]::GetFullPath('$(PublishDir)'))</StreamDeckPluginManifestPathPublished>-->
     </PropertyGroup>
-    <ItemGroup>
-      <StreamDeckPluginManifestPathFile Include="$(StreamDeckPluginManifestPath)" />
-    </ItemGroup>
   </Target>
+
+  <Target Name="PrepairInstall" DependsOnTargets="ConfigureStreamDeckProperties">
+    <PropertyGroup>
+      <AutoInstall>true</AutoInstall>      
+    </PropertyGroup>
+
+  </Target>
+
+  <!-- 
+    Installs the published output into the streamdeck plugin folder
+  -->
+  <Target Name="Install" DependsOnTargets="PrepairInstall;Publish" />
 
   <Target Name="ExportStreamDeckPluginPrepareForPublish" BeforeTargets="PrepareForPublish" DependsOnTargets="ConfigureStreamDeckProperties">
 
+    <ItemGroup>
+      <StreamDeckPluginManifestPathFile Include="$(StreamDeckPluginManifestPath)" />
+    </ItemGroup>
 
     <Message Importance="high" Text="$(StreamDeckPluginManifestPathFile)"></Message>
     <Copy SourceFiles="@(StreamDeckPluginManifestPathFile)" DestinationFolder="$(PublishDir)"/>
+
+    <Exec  Condition="'$(AutoInstall)' == 'true'" Command="taskkill /F /IM StreamDeck.exe" IgnoreExitCode="true" />
   </Target>
 
-  <Target Name="ExportStreamDeckPluginAfterPublish" AfterTargets="Publish">
+  <Target Name="PackPlugin" BeforeTargets="Pack" DependsOnTargets="Publish">
 
     <!--mac/window toggle here, figure out a way to not need this!!!-->
     <PropertyGroup>
+      <StreamDeckPackageBaseIntermediateOutputPath>$(BaseIntermediateOutputPath)publish\</StreamDeckPackageBaseIntermediateOutputPath>
       <_fullPublishSrcFolderPath>$([System.IO.Path]::GetFullPath('$(PublishDir)').TrimEnd("\"))</_fullPublishSrcFolderPath>
-      <_fullPublishDestFolderPath>$([System.IO.Path]::GetFullPath('$(PublishDirPlugin)').TrimEnd("\"))</_fullPublishDestFolderPath>
+      <_fullPublishDestFolderPath>$([System.IO.Path]::GetFullPath('$(PackageOutputPath)').TrimEnd("\"))</_fullPublishDestFolderPath>
       <StreamDeckPluginPackageCommand>"$(StreamDeckSdkPath)tools\DistributionTool.exe" -b -i "$(_fullPublishSrcFolderPath)" -o "$(_fullPublishDestFolderPath)"</StreamDeckPluginPackageCommand>
     </PropertyGroup>
+    <ItemGroup>
+      <_StreamDeckPluginFile Include="$(_fullPublishDestFolderPath)\$(StreamDeckPackagePath)" />
+    </ItemGroup>
+    
+    <Message Text="StreamDeckPluginFile -> @(_StreamDeckPluginFile)" Importance="high" />
 
     <!-- package up here too -->
-    <RemoveDir Directories="$(_fullPublishDestFolderPath)" />
     <MakeDir Directories="$(_fullPublishDestFolderPath)" />
+    <Delete Files="@(_StreamDeckPluginFile)" />
     <Exec Command="$(StreamDeckPluginPackageCommand)" Condition="true"  LogStandardErrorAsError="true"   />
-    <Message Text="$(AssemblyName) -> $(StreamDeckPackagePath)" Importance="high" />
+    <Message Text="$(AssemblyName) -> $(PackageOutputPath)$(StreamDeckPackagePath)" Importance="high" />
   </Target>
 
-  <Target Name="ExportStreamDeckPluginPrepareForBuild" BeforeTargets="Build">
-
-    <PropertyGroup>
-      <StreamDeckPluginManifestPath>$([System.IO.Path]::GetFullPath('$(OutDir)'))manifest.json</StreamDeckPluginManifestPath>
-    </PropertyGroup>
-  </Target>
-
-  <Target Name="ExportStreamDeckManifest" AfterTargets="Build">
-
+  <Target Name="ExportStreamDeckManifest" AfterTargets="CoreBuild" DependsOnTargets="ConfigureStreamDeckProperties">
 
     <PropertyGroup>
       <StreamDeckPluginManifestGenerationCommand>dotnet run --no-build --no-restore -p "$(MSBuildProjectFullPath)" -c $(Configuration) -- -export-config "$(StreamDeckPluginManifestPath)" -export-config-sdk "$(StreamDeckSdkPath)"</StreamDeckPluginManifestGenerationCommand>
@@ -63,7 +87,7 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="StreamDeckInstallPlugin" AfterTargets="Build" Condition="'$(AutoInstall)' == 'true'" DependsOnTargets="ExportStreamDeckManifest;ConfigureStreamDeckProperties">
+  <!--<Target Name="StreamDeckInstallPlugin" AfterTargets="Build" Condition="'$(AutoInstall)' == 'true'" DependsOnTargets="ExportStreamDeckManifest;ConfigureStreamDeckProperties">
     <ItemGroup>
       <_CopyItems Include="$(OutDir)\*.*" />
     </ItemGroup>
@@ -77,5 +101,5 @@
       SourceFiles="@(_CopyItems)"
       DestinationFolder="$(_pluginIsntallDirectory)"
       />
-  </Target>
+  </Target>-->
 </Project>
