@@ -24,6 +24,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{89A9560D-289F-4E21-A4E4-49618BF8F68D}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\dotnet-core.yml = .github\workflows\dotnet-core.yml
+		src\pack.proj = src\pack.proj
 	EndProjectSection
 EndProject
 Global

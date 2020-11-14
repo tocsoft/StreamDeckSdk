@@ -31,7 +31,7 @@ jobs:
     - name: Test
       run: dotnet test --no-restore --verbosity normal 
     - name: Pack
-      run: dotnet pack --configuration Release --no-build --no-restore --verbosity normal
+      run: dotnet pack .\src\pack.proj --configuration Release --no-build --no-restore --verbosity normal
     - uses: actions/upload-artifact@v2
       with:
         name: packages
