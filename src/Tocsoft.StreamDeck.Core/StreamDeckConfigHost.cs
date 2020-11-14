@@ -45,12 +45,46 @@ namespace Tocsoft.StreamDeck
 
             var directory = Path.GetDirectoryName(this.codePath);
 
-            var configIcon = configuration.Icon;
-            // export embedded/sample images
-            if (string.IsNullOrWhiteSpace(configIcon))
+            string DefaultConfigIcon()
             {
-                configIcon = @"fallback";
+                if (!string.IsNullOrEmpty(configuration.Icon))
+                {
+                    return configuration.Icon;
+                }
+
+                var asemblyNameIcon = Path.GetFileNameWithoutExtension(codePath);
+                var assemblyIcon = $"Icons\\{asemblyNameIcon}";
+                if (IsValidIcon(asemblyNameIcon))
+                {
+                    return asemblyNameIcon;
+                }
+
+                if (configuration.Actions.Count == 1)
+                {
+                    var action = configuration.Actions.Single();
+                    if (!string.IsNullOrEmpty(action.Icon))
+                    {
+                        return action.Icon;
+                    }
+
+                    var handlerIcon = $"Icons\\{action.Handler.Name}";
+                    if (IsValidIcon(handlerIcon))
+                    {
+                        return handlerIcon;
+                    }
+                }
+
+                var genericName = $"Icons\\Plugin";
+                if (IsValidIcon(genericName))
+                {
+                    return genericName;
+                }
+
+                return @"fallback";
             }
+
+            var configIcon = DefaultConfigIcon();
+
             bool IsValidPath(string path)
             {
                 if (string.IsNullOrEmpty(path))
@@ -65,6 +99,7 @@ namespace Tocsoft.StreamDeck
                 }
                 return true;
             }
+
             bool IsValidIcon(string icon)
             {
                 if (string.IsNullOrEmpty(icon))
